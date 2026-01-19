@@ -1,0 +1,12 @@
+{
+  "domain": "hjem-is",
+  "name": "Hjem-IS",
+  "icon": "mdi:ice-pop",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://www.hjem-is.dk",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "",
+  "requirements": [],
+  "version": "1.0.0"
+}
