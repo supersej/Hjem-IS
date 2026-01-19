@@ -2,17 +2,14 @@
 Home Assistant Custom Component: Hjem-Is
 
 
-[![GitHub Release][releases-shield]][releases]
-[![downloads-shield]][release-link]
-![Project Stage][project-stage-shield]
-[![issues-shield]](issues)
-[![License][license-shield]](LICENSE.md)
-[![hacs_badge][hacs-shield]][hacs]
-[![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
 
-A sensor for getting information about the next time Hemglass comes to visit. You give it coordinates and it will pick the closest stop, if you want a specific stop, use the coordinates for that stop.
+A sensor for getting information about the next time Hjem-Is comes to visit. 
+It will automatically pull your coordinates from HA (if set).
+If not set you can set it manually.
+You give it coordinates and it will list the closest stop for you to choose from.
+You can add multiple stops if you want to.
 
-After installing the integration using HACS and restarting your server you simply add a Hemglass stop by clicking the button below or by going to Devices & Services and adding it from there.
+After installing the integration using HACS and restarting your server you simply add a Hjem-Is stop by clicking the button below or by going to Devices & Services and adding it from there.
 
 [![add-integration-shield]][add-integration]
 
@@ -43,16 +40,3 @@ Distance
 ```
 
 
-[downloads-shield]: https://img.shields.io/github/downloads/popeen/Home-Assistant-Addon-Hemglass/total
-[release-link]: https://github.com/supersej/HjemIs/releases
-[releases-shield]: https://img.shields.io/github/release/popeen/Home-Assistant-Addon-Hemglass.svg
-[releases]: https://github.com/supersej/HjemIs/releases
-[project-stage-shield]: https://img.shields.io/badge/project%20stage-ready%20for%20use-green.svg
-[issues-shield]: https://img.shields.io/github/issues-raw/popeen/Home-Assistant-Addon-Hemglass.svg
-[license-shield]: https://img.shields.io/github/license/popeen/Home-Assistant-Addon-Hemglass.svg
-[hacs-shield]: https://img.shields.io/badge/HACS-Default-41BDF5.svg
-[hacs]: https://github.com/custom-components/hacs
-[buymeacoffee-shield]: https://img.shields.io/badge/donation-Buy%20me%20a%20coffee-orange
-[buymeacoffee]: https://www.buymeacoffee.com/popeen
-[add-integration-shield]: https://my.home-assistant.io/badges/config_flow_start.svg
-[add-integration]: https://my.home-assistant.io/redirect/config_flow_start/?domain=hjem-is
