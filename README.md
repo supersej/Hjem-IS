@@ -1,4 +1,4 @@
-## Home Assistant Custom Component: Hjem-Is
+## Home Assistant Custom Component: 🍦 Hjem-Is
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/supersej/Hjem-IS/releases)
