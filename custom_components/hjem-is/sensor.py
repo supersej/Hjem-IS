@@ -14,29 +14,28 @@ async def async_setup_entry(hass, entry, async_add_entities):
     lng = entry.data["longitude"]
     selected_id = entry.data.get("selected_stop_id")
     
-    # Opret og start coordinatoren
     coordinator = HjemIsCoordinator(hass, lat, lng)
     await coordinator.async_config_entry_first_refresh()
 
     entities = []
     
     if selected_id == "all":
-        # "Hent alle" logik
         if coordinator.data:
             for stop in coordinator.data:
                 raw_address = stop.get("address", "Ukendt")
                 clean_address = raw_address.split(',')[0]
+                stop_id = int(stop["id"])  # ← Altid int
                 entities.append(
-                    HjemIsSensor(coordinator, stop["id"], clean_address)
+                    HjemIsSensor(coordinator, stop_id, clean_address, entry.entry_id)
                 )
     else:
-        # Enkelt stop logik
         address_name = entry.data.get("stop_address", f"Stop {selected_id}")
         entities.append(
-            HjemIsSensor(coordinator, int(selected_id), address_name)
+            HjemIsSensor(coordinator, int(selected_id), address_name, entry.entry_id)
         )
 
     async_add_entities(entities)
+
 
 class HjemIsCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, lat, lng):
@@ -44,7 +43,6 @@ class HjemIsCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name="Hjem-IS API",
-            # Vi starter konservativt med 6 timer. Dette ændres dynamisk efter første kald.
             update_interval=timedelta(hours=6),
         )
         self.lat = lat
@@ -57,46 +55,35 @@ class HjemIsCoordinator(DataUpdateCoordinator):
                 async with session.get(url) as response:
                     if response.status != 200:
                         raise UpdateFailed(f"Fejl ved hentning: {response.status}")
-                    
                     data = await response.json()
-                    
-                    # --- DYNAMISK INTERVAL LOGIK ---
                     self._adjust_interval(data)
-                    
                     return data
 
     def _adjust_interval(self, data):
-        """Justerer opdateringshastigheden baseret på om bilen kommer i dag."""
-        if not data or len(data) == 0:
+        if not data:
             return
-
-        # Vi tager datoen fra det første stop i listen (antager hele ruten køres samme dag)
-        # JSON format: "arrival_date": "2026-01-26"
         next_visit_str = data[0].get("arrival_date")
-        
         if next_visit_str:
             today_str = datetime.now().date().isoformat()
-            
             if next_visit_str == today_str:
-                # DET ER I DAG! Turbo mode aktiveret 🚀
-                # Vi opdaterer hvert 15. minut for at fange forsinkelser/ankomster live
                 if self.update_interval != timedelta(minutes=15):
-                    _LOGGER.info("Hjem-IS kommer i dag! Opdateringsinterval sat op til 15 minutter.")
+                    _LOGGER.info("Hjem-IS kommer i dag! Opdateringsinterval: 15 min.")
                     self.update_interval = timedelta(minutes=15)
             else:
-                # Det er ikke i dag. Vi slapper af. 💤
                 if self.update_interval != timedelta(hours=6):
-                    _LOGGER.info("Hjem-IS kommer ikke i dag. Opdateringsinterval sat ned til 6 timer.")
+                    _LOGGER.info("Hjem-IS kommer ikke i dag. Opdateringsinterval: 6 timer.")
                     self.update_interval = timedelta(hours=6)
+
 
 class HjemIsSensor(SensorEntity):
     _attr_icon = "mdi:ice-cream-truck"
     _attr_has_entity_name = False
 
-    def __init__(self, coordinator, my_stop_id, address_name):
+    def __init__(self, coordinator, my_stop_id, address_name, entry_id):
         self.coordinator = coordinator
         self.my_stop_id = my_stop_id
-        self._attr_unique_id = f"hjem_is_stop_{my_stop_id}"
+        # entry_id sikrer unikhed på tværs af config entries
+        self._attr_unique_id = f"hjem_is_{entry_id}_{my_stop_id}"
         self._attr_name = f"Hjem-IS {address_name}"
 
     @property
@@ -106,9 +93,10 @@ class HjemIsSensor(SensorEntity):
     @property
     def _get_my_stop_data(self):
         data = self.coordinator.data
-        if not data: return None
+        if not data:
+            return None
         for stop in data:
-            if stop.get("id") == self.my_stop_id:
+            if int(stop.get("id", -1)) == self.my_stop_id:
                 return stop
         return None
 
@@ -124,9 +112,6 @@ class HjemIsSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         stop = self._get_my_stop_data
-        if stop:
-            return stop
-        return {}
+        return stop if stop else {}
 
-    async def async_update(self):
-        await self.coordinator.async_request_refresh()
+    # ← async_update FJERNET — coordinator håndterer polling
