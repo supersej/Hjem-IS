@@ -8,7 +8,7 @@ from homeassistant.helpers.entity import DeviceInfo
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "hjem-is"
+DOMAIN = "hjem_is"
 
 async def async_setup_entry(hass, entry, async_add_entities):
     lat = entry.data["latitude"]
