@@ -1,7 +1,7 @@
 ## Home Assistant Custom Component: 🍦 Hjem-Is
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/supersej/Hjem-IS/releases)
+[![version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/supersej/Hjem-IS/releases)
 [![maintainer](https://img.shields.io/badge/maintainer-Supersej-blue.svg)](https://github.com/supersej)
 [![buy_me_a_coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/darkdk)
 

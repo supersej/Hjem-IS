@@ -4,6 +4,7 @@ import async_timeout
 from datetime import timedelta, datetime
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.entity import DeviceInfo
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             for stop in coordinator.data:
                 raw_address = stop.get("address", "Ukendt")
                 clean_address = raw_address.split(',')[0]
-                stop_id = int(stop["id"])  # ← Altid int
+                stop_id = int(stop["id"])
                 entities.append(
                     HjemIsSensor(coordinator, stop_id, clean_address, entry.entry_id)
                 )
@@ -82,9 +83,14 @@ class HjemIsSensor(SensorEntity):
     def __init__(self, coordinator, my_stop_id, address_name, entry_id):
         self.coordinator = coordinator
         self.my_stop_id = my_stop_id
-        # entry_id sikrer unikhed på tværs af config entries
         self._attr_unique_id = f"hjem_is_{entry_id}_{my_stop_id}"
         self._attr_name = f"Hjem-IS {address_name}"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry_id)},
+            name="Hjem-IS",
+            manufacturer="Hjem-IS",
+            model="Isrute",
+        )
 
     @property
     def available(self):
@@ -113,5 +119,3 @@ class HjemIsSensor(SensorEntity):
     def extra_state_attributes(self):
         stop = self._get_my_stop_data
         return stop if stop else {}
-
-    # ← async_update FJERNET — coordinator håndterer polling
