@@ -53,9 +53,9 @@ class HjemIsCoordinator(DataUpdateCoordinator):
     def _adjust_interval(self, data):
         """Skifter mellem turbo (15 min) og normal (6 timer) opdateringsinterval.
 
-        Kalder async_set_update_interval() frem for direkte assignment på
-        self.update_interval — det direkte assignment ændrer kun attributten,
-        men genplanlægger ikke den allerede-kørende HA-timer.
+        Kaldes fra _async_update_data(), så en direkte assignment på
+        self.update_interval er nok — coordinatoren læser attributten igen,
+        når den planlægger den næste opdatering efter den nuværende cyklus.
         """
         if not data:
             return
@@ -65,11 +65,11 @@ class HjemIsCoordinator(DataUpdateCoordinator):
         if should_be_turbo and not self.turbo_active:
             _LOGGER.info("Hjem-IS kommer i dag! Skifter til turbo-interval: 15 min.")
             self.turbo_active = True
-            self.async_set_update_interval(TURBO_INTERVAL)
+            self.update_interval = TURBO_INTERVAL
         elif not should_be_turbo and self.turbo_active:
             _LOGGER.info("Hjem-IS kommer ikke i dag. Skifter til normalt interval: 6 timer.")
             self.turbo_active = False
-            self.async_set_update_interval(NORMAL_INTERVAL)
+            self.update_interval = NORMAL_INTERVAL
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
